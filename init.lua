@@ -1,4 +1,5 @@
 vim.g.loaded_man = 1 -- deactivate plugin
+
 vim.g.mapleader = " " -- Use `<Space>` as <Leader> key
 vim.g.maplocalleader = " "
 
@@ -38,7 +39,7 @@ vim.o.fillchars = "eob: ,fold:╌"
 -- }
 
 -- Behaviour
-vim.o.formatoptions = "jcroqlnt"
+vim.o.formatoptions = "jcroqlnt" -- TODO: defined this
 -- vim.o.formatoptions = "tcqj" --default
 -- vim.o.formatoptions = "rqnl1j"
 vim.o.wrap = false
@@ -53,9 +54,10 @@ vim.o.virtualedit = "block"
 vim.o.shiftround = true
 
 -- Folds
--- opt.foldmethod = "expr"
+-- opt.foldmethod = "expr" -- set a default fold method like indent of manual
 vim.o.foldlevel = 99 -- start with all folds open
-vim.o.foldtext = ""
+vim.o.foldtext = "" -- TODO: finish the styling of folds
+-- vim.o.foldcolumn = "1"
 
 -- netrw
 -- vim.g.netrw_banner = 0
@@ -69,7 +71,7 @@ vim.diagnostic.config({
   virtual_text = true,
 })
 
-vim.lsp.enable({ "lua_ls", "astro", "basedpyright", "tynimist" })
+vim.lsp.enable({ "lua_ls", "astro", "tsgo", "basedpyright", "tinymist" })
 
 _G.Config = {}
 
@@ -79,23 +81,65 @@ _G.Config.new_autocmd = function(event, pattern, callback, desc)
   vim.api.nvim_create_autocmd(event, opts)
 end
 
--- highlight on yank
-_G.Config.new_autocmd("TextYankPost", nil, function()
-  vim.hl.on_yank()
-end, "Highlight selection on yank")
+local group = vim.api.nvim_create_augroup("LazyPlugins", { clear = true })
+---@param plugins (string|vim.pack.Spec)[]
+_G.Config.lazy_load = function(plugins)
+  vim.pack.add(plugins, {
+    load = function(plugin)
+      local data = plugin.spec.data or {}
 
--- Treesitter update parsers automatically
-vim.api.nvim_create_autocmd("PackChanged", {
-  callback = function(event)
-    local name, kind = event.data.spec.name, event.data.kind
-
-    if (kind == "update" or kind == "install") and name == "nvim-treesitter" then
-      local ok = pcall(vim.cmd, "TSUpdate")
-      if not ok then
-        vim.notify("TSUpdate failed!", vim.log.levels.WARN)
-      else
-        vim.notify("TSUpdate correctly executed!", vim.log.levels.INFO)
+      -- Event trigger
+      if data.event then
+        vim.api.nvim_create_autocmd(data.event, {
+          group = group,
+          once = true,
+          pattern = data.pattern or "*",
+          callback = function()
+            vim.cmd.packadd(plugin.spec.name)
+            if data.config then
+              data.config(plugin)
+            end
+          end,
+        })
       end
-    end
-  end,
-})
+
+      -- Command trigger
+      if data.cmd then
+        vim.api.nvim_create_user_command(data.cmd, function(cmd_args)
+          pcall(vim.api.nvim_del_user_command, data.cmd)
+          vim.cmd.packadd(plugin.spec.name)
+          if data.config then
+            data.config(plugin)
+          end
+          vim.api.nvim_cmd({
+            cmd = data.cmd,
+            args = cmd_args.fargs,
+            bang = cmd_args.bang,
+            nargs = cmd_args.nargs,
+            range = cmd_args.range ~= 0 and { cmd_args.line1, cmd_args.line2 } or nil,
+            count = cmd_args.count ~= -1 and cmd_args.count or nil,
+          }, {})
+        end, {
+          nargs = data.nargs,
+          range = data.range,
+          bang = data.bang,
+          complete = data.complete,
+          count = data.count,
+        })
+      end
+
+      -- Keymap trigger
+      if data.keys then
+        local mode, lhs = data.keys[1], data.keys[2]
+        vim.keymap.set(mode, lhs, function()
+          vim.keymap.del(mode, lhs)
+          vim.cmd.packadd(plugin.spec.name)
+          if data.config then
+            data.config(plugin)
+          end
+          vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(lhs, true, false, true), "m", false)
+        end, { desc = data.desc })
+      end
+    end,
+  })
+end
