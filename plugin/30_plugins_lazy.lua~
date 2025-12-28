@@ -1,0 +1,77 @@
+_G.Config.lazy_load({
+	{
+		src = "https://github.com/mason-org/mason.nvim",
+		data = {
+			-- cmd = "Mason",
+			event = { "BufReadPost", "BufWritePost", "BufNewFile" },
+			config = function()
+				require("mason").setup({
+					ui = {
+						icons = {
+							package_installed = "✓",
+							package_pending = "➜",
+							package_uninstalled = "✗",
+						},
+					},
+				})
+			end,
+		},
+	},
+})
+
+-- no lazy
+vim.pack.add({
+	{ src = "https://github.com/bluz71/vim-moonfly-colors" },
+	{ src = "https://github.com/nvim-treesitter/nvim-treesitter", version = "main" },
+	{ src = "https://github.com/neovim/nvim-lspconfig" },
+	{ src = "https://github.com/stevearc/conform.nvim" },
+	{ src = "https://github.com/j-hui/fidget.nvim" },
+})
+
+require("fidget").setup({})
+
+vim.cmd([[colorscheme habamax]])
+
+require("conform").setup({
+	formatters_by_ft = {
+		lua = { "stylua" },
+		javascript = { "prettier" },
+		javascriptreact = { "prettier" },
+		typescript = { "prettier" },
+		typescriptreact = { "prettier" },
+		markdown = { "prettier" },
+		json = { "prettier" },
+		html = { "prettier" },
+		jsonc = { "prettier" },
+		python = { "ruff_format" },
+	},
+	format_on_save = {
+		-- These options will be passed to conform.format()
+		timeout_ms = 500,
+		lsp_format = "fallback",
+	},
+})
+
+_G.Config.treesitter_supported_languages = {
+	"python",
+	"javascript",
+	"typescript",
+	"lua",
+	"typst",
+	"html",
+	"css",
+	"zsh",
+	"bash",
+	"jsdoc",
+	"tsx",
+	"jsx",
+	"json",
+	"sql",
+	"dockerfile",
+	"yaml",
+	"csv",
+	"markdown",
+	"svelte",
+	"astro",
+}
+require("nvim-treesitter").install(_G.Config.treesitter_supported_languages)
