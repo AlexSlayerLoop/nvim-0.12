@@ -39,6 +39,7 @@ vim.o.fillchars = "eob: ,fold:╌"
 -- }
 
 -- Behaviour
+vim.o.swapfile = false
 vim.o.formatoptions = "jcroqlnt" -- TODO: defined this
 -- vim.o.formatoptions = "tcqj" --default
 -- vim.o.formatoptions = "rqnl1j"

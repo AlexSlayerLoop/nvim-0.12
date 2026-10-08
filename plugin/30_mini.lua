@@ -14,7 +14,7 @@ later(function()
   local f = function(args)
     vim.b[args.buf].miniai_disable = true
   end
-  vim.api.nvim_create_autocmd("Filetype", { pattern = "fugitive", callback = f })
+  vim.api.nvim_create_autocmd("FileType", { pattern = "fugitive", callback = f })
 end)
 
 -- mini.completion
@@ -48,7 +48,13 @@ end)
 -- mini.surround
 later(function()
   require("mini.surround").setup()
+
+  local f = function(args)
+    vim.b[args.buf].minisurround_disable = true
+  end
+  vim.api.nvim_create_autocmd("FileType", { pattern = "fugitive", callback = f })
 end)
+
 -- mini.pairs
 later(function()
   require("mini.pairs").setup { modes = { command = true } }

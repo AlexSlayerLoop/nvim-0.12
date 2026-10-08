@@ -40,6 +40,7 @@ end, { desc = "pick config" })
 -- end, { desc = "pick data" })
 
 -- Git status
+vim.keymap.set("n", "<leader>gs", "<cmd>Git<cr>", { desc = "git status" })
 vim.keymap.set("n", "<leader>gt", "<cmd>Pick git_files<cr>", { desc = "git tracked" })
 vim.keymap.set("n", "<leader>gu", "<cmd>Pick git_files scope='untracked'<cr>", { desc = "git untracked" })
 vim.keymap.set("n", "<leader>gd", "<cmd>Pick git_files scope='deleted'<cr>", { desc = "git deleted" })
@@ -56,10 +57,10 @@ vim.keymap.set("n", "<leader>bo", function()
 end, { desc = "Close other buffers", silent = true })
 
 -- Pane Navigation
-vim.keymap.set("n", "<C-h>", "<C-w>h") -- Navigation Left
-vim.keymap.set("n", "<C-j>", "<C-w>j") -- Navigation Down
-vim.keymap.set("n", "<C-k>", "<C-w>k") -- Navigation Up
-vim.keymap.set("n", "<C-l>", "<C-w>l") -- Navigation Right
+-- vim.keymap.set("n", "<C-h>", "<C-w>h") -- Navigation Left
+-- vim.keymap.set("n", "<C-j>", "<C-w>j") -- Navigation Down
+-- vim.keymap.set("n", "<C-k>", "<C-w>k") -- Navigation Up
+-- vim.keymap.set("n", "<C-l>", "<C-w>l") -- Navigation Right
 
 -- Resize window using
 vim.keymap.set("n", "<Left>", "<cmd>vertical resize -5<CR>", { desc = "Decrease Window Width" })
@@ -89,9 +90,12 @@ vim.keymap.set("v", "<", "<gv")
 vim.keymap.set("v", ">", ">gv")
 
 -- Toggleling
+vim.keymap.set("n", "<leader>us", function()
+  vim.g.minisurround_disable = not vim.g.minisurround_disable
+end, { desc = "[T]oggle minisurround" })
 vim.keymap.set("n", "<leader>up", function()
   vim.g.minipairs_disable = not vim.g.minipairs_disable
-end, { desc = "toggle minipairs" })
+end, { desc = "[T]oggle minipairs" })
 vim.keymap.set("n", "<leader>ud", function()
   vim.diagnostic.enable(not vim.diagnostic.is_enabled())
 end, { desc = "[T]oggle [D]iagnostics" })

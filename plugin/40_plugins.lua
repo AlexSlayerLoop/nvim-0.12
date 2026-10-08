@@ -21,7 +21,7 @@ now(function()
   add { "https://github.com/sainnhe/gruvbox-material" }
   add { "https://github.com/jpwol/thorn.nvim" }
   add { "https://github.com/sainnhe/everforest" }
-  vim.cmd [[colorscheme retrobox]]
+  vim.cmd [[colorscheme solarized-osaka-vivid]]
 end)
 
 now_if_args(function()
@@ -86,7 +86,7 @@ now_if_args(function()
   vim.lsp.enable {
     "lua_ls",
     "astro",
-    "tsgo",
+    "tsc",
     "basedpyright",
     "tinymist",
     "cssls",
@@ -130,6 +130,11 @@ end)
 
 on_filetype("csv", function()
   add { { src = "https://github.com/hat0uma/csvview.nvim" } }
+  require("csvview").setup {
+    view = {
+      display_mode = "border",
+    },
+  }
 end)
 
 on_filetype("typst", function()

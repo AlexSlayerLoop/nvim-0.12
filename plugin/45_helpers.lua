@@ -29,7 +29,7 @@ local ensure_installed = {
   "lua-language-server",
   "tailwindcss-language-server",
   "tinymist",
-  "tsgo",
+  "tsc",
   "basedpyright",
   "css-lsp",
   "gopls",
